@@ -173,7 +173,10 @@ function createApp({
         image,
       });
     } catch (error) {
-      console.error('Failed to generate image with OpenAI', error);
+      console.error('Failed to generate image with OpenAI', {
+        name: error instanceof Error ? error.name : 'UnknownError',
+        code: error && typeof error === 'object' && 'code' in error ? error.code : undefined,
+      });
       return res.status(502).json({
         error: 'Failed to generate image.',
       });

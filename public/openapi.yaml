@@ -86,8 +86,26 @@ paths:
                 properties:
                   error:
                     type: string
+        '401':
+          description: Upstream authentication error from OpenAI
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '403':
+          description: Upstream authorization or policy error from OpenAI
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
         '500':
-          description: Missing configuration
+          description: Missing local configuration or upstream server error
           content:
             application/json:
               schema:

@@ -152,6 +152,28 @@ test('maps upstream HTTP errors to the same status code', async () => {
   });
 });
 
+test('passes through other upstream HTTP statuses', async () => {
+  const app = createApp({
+    apiKey: 'test-key',
+    fetchImpl: async () => ({
+      ok: false,
+      status: 401,
+      text: async () => JSON.stringify({ error: { message: 'Invalid API key' } }),
+    }),
+  });
+
+  await withServer(app, async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/generate-human-image`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: 'Photorealistic portrait' }),
+    });
+
+    assert.equal(response.status, 401);
+    assert.equal((await response.json()).error, 'Invalid API key');
+  });
+});
+
 test('returns 502 when the upstream request throws', async () => {
   const app = createApp({
     apiKey: 'test-key',
