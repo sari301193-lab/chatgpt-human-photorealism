@@ -55,24 +55,16 @@ test('serves plugin manifest with dynamic host URLs', async () => {
   });
 });
 
-test('falls back to the request host when PUBLIC_BASE_URL is not set', async () => {
+test('requires PUBLIC_BASE_URL for plugin metadata routes', async () => {
   const app = createApp({
     apiKey: 'test-key',
     fetchImpl: async () => ({ ok: true, json: async () => ({ data: [] }) }),
   });
 
   await withServer(app, async (baseUrl) => {
-    const response = await requestJson(`${baseUrl}/.well-known/ai-plugin.json`, {
-      method: 'GET',
-      headers: {
-        Host: 'plugin.example.com',
-      },
-    });
-    assert.equal(response.statusCode, 200);
-
-    const payload = response.body;
-    assert.equal(payload.api.url, 'http://plugin.example.com/openapi.yaml');
-    assert.equal(payload.logo_url, 'http://plugin.example.com/logo.svg');
+    const response = await requestJson(`${baseUrl}/.well-known/ai-plugin.json`);
+    assert.equal(response.statusCode, 500);
+    assert.equal(response.body.error, 'PUBLIC_BASE_URL is not configured.');
   });
 });
 
@@ -176,6 +168,6 @@ test('returns 502 when the upstream request throws', async () => {
     });
 
     assert.equal(response.status, 502);
-    assert.equal((await response.json()).error, 'network unavailable');
+    assert.equal((await response.json()).error, 'Failed to generate image.');
   });
 });

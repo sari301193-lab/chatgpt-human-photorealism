@@ -112,12 +112,12 @@ paths:
                 properties:
                   error:
                     type: string
-      default:
-        description: Other upstream API error
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                error:
-                  type: string
+        default:
+          description: Other upstream API error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string

@@ -14,24 +14,13 @@ function normalizeBaseUrl(baseUrl) {
   return baseUrl ? baseUrl.replace(/\/+$/, '') : null;
 }
 
-function isSafeRequestHost(host) {
-  return typeof host === 'string' && /^[a-z0-9.-]+(?::\d+)?$/i.test(host);
-}
-
-function resolveBaseUrl(req, configuredBaseUrl) {
-  const normalizedBaseUrl = normalizeBaseUrl(configuredBaseUrl);
-
-  if (normalizedBaseUrl) {
-    return normalizedBaseUrl;
+function requirePublicBaseUrl(res, configuredBaseUrl) {
+  if (!configuredBaseUrl) {
+    res.status(500).json({ error: 'PUBLIC_BASE_URL is not configured.' });
+    return null;
   }
 
-  const requestHost = req.get('host');
-
-  if (isSafeRequestHost(requestHost)) {
-    return `${req.protocol}://${requestHost}`;
-  }
-
-  return `http://localhost:${process.env.PORT || 3000}`;
+  return configuredBaseUrl;
 }
 
 async function parseResponseBody(response) {
@@ -58,6 +47,7 @@ function createApp({
   fetchImpl = fetch,
 } = {}) {
   const app = express();
+  const normalizedBaseUrl = normalizeBaseUrl(baseUrl);
   const openApiTemplate = readPublicFile('openapi.yaml');
 
   app.use(express.json({ limit: '1mb' }));
@@ -67,11 +57,14 @@ function createApp({
     res.json({
       name: 'chatgpt-human-photorealism',
       description: 'ChatGPT plugin for generating photorealistic human images with DALL-E.',
-      docs: {
-        manifest: `${resolveBaseUrl(req, baseUrl)}/.well-known/ai-plugin.json`,
-        openapi: `${resolveBaseUrl(req, baseUrl)}/openapi.yaml`,
-        health: `${resolveBaseUrl(req, baseUrl)}/health`,
-      },
+      docs: normalizedBaseUrl
+        ? {
+            manifest: `${normalizedBaseUrl}/.well-known/ai-plugin.json`,
+            openapi: `${normalizedBaseUrl}/openapi.yaml`,
+            health: `${normalizedBaseUrl}/health`,
+          }
+        : null,
+      configuration: normalizedBaseUrl ? 'ready' : 'Set PUBLIC_BASE_URL to expose plugin metadata.',
     });
   });
 
@@ -80,7 +73,12 @@ function createApp({
   });
 
   app.get('/.well-known/ai-plugin.json', (req, res) => {
-    const publicBaseUrl = resolveBaseUrl(req, baseUrl);
+    const publicBaseUrl = requirePublicBaseUrl(res, normalizedBaseUrl);
+
+    if (!publicBaseUrl) {
+      return;
+    }
+
     res.json({
       schema_version: 'v1',
       name_for_human: 'Human Photorealism',
@@ -102,7 +100,12 @@ function createApp({
   });
 
   app.get('/openapi.yaml', (req, res) => {
-    const publicBaseUrl = resolveBaseUrl(req, baseUrl);
+    const publicBaseUrl = requirePublicBaseUrl(res, normalizedBaseUrl);
+
+    if (!publicBaseUrl) {
+      return;
+    }
+
     res.type('text/yaml').send(openApiTemplate.replace(/__SERVER_URL__/g, publicBaseUrl));
   });
 
@@ -172,8 +175,9 @@ function createApp({
         image,
       });
     } catch (error) {
+      console.error('Failed to generate image with OpenAI', error);
       return res.status(502).json({
-        error: error instanceof Error ? error.message : 'Unexpected error while generating image.',
+        error: 'Failed to generate image.',
       });
     }
   });

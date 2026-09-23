@@ -22,7 +22,7 @@ OPENAI_API_KEY=your_key_here PUBLIC_BASE_URL=http://localhost:3000 npm start
 ```
 
 The service starts on port `3000` by default. Override it with `PORT`.
-Set `PUBLIC_BASE_URL` to the externally reachable base URL you want exposed in the plugin manifest and OpenAPI spec.
+Set `PUBLIC_BASE_URL` to the externally reachable base URL you want exposed in the plugin manifest and OpenAPI spec. The metadata routes return an error until this is configured.
 
 ## API
 
