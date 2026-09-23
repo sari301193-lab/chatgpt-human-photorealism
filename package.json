@@ -1,0 +1,20 @@
+{
+  "name": "chatgpt-human-photorealism",
+  "version": "1.0.0",
+  "description": "ChatGPT plugin for generating photorealistic human images using DALL-E API",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://localhost:26831/sari301193-lab/chatgpt-human-photorealism"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

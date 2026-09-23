@@ -1,0 +1,142 @@
+openapi: 3.0.3
+info:
+  title: Human Photorealism Plugin API
+  version: 1.0.0
+  description: Generate photorealistic human images with DALL-E.
+servers:
+  - url: __SERVER_URL__
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      summary: Check service health
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+  /generate-human-image:
+    post:
+      operationId: generateHumanImage
+      summary: Generate a photorealistic human image
+      description: Returns generated image metadata on success. If the upstream OpenAI Images API returns a non-2xx response, this endpoint passes through the upstream HTTP status code and returns a JSON body with a single `error` field.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - prompt
+              properties:
+                prompt:
+                  type: string
+                  description: Detailed description of the human image to generate.
+                size:
+                  type: string
+                  enum:
+                    - 1024x1024
+                    - 1024x1792
+                    - 1792x1024
+                  default: 1024x1024
+                quality:
+                  type: string
+                  enum:
+                    - standard
+                    - hd
+                  default: standard
+                style:
+                  type: string
+                  enum:
+                    - natural
+                    - vivid
+                  default: natural
+      responses:
+        '200':
+          description: Generated image metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  created:
+                    type: integer
+                  image:
+                    type: object
+                    nullable: true
+                    properties:
+                      revised_prompt:
+                        type: string
+                      url:
+                        type: string
+                        format: uri
+                      b64_json:
+                        type: string
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '401':
+          description: Upstream authentication error from OpenAI
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '403':
+          description: Upstream authorization or policy error from OpenAI
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Missing local configuration or upstream server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '502':
+          description: Upstream image generation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '429':
+          description: Upstream rate limit or quota error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        default:
+          description: Any other upstream non-2xx API error passed through from OpenAI
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
