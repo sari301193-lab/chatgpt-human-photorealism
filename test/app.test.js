@@ -18,15 +18,19 @@ async function withServer(app, run) {
 }
 
 test('serves plugin manifest with dynamic host URLs', async () => {
-  const app = createApp({ apiKey: 'test-key', fetchImpl: async () => ({ ok: true, json: async () => ({ data: [] }) }) });
+  const app = createApp({
+    apiKey: 'test-key',
+    baseUrl: 'http://127.0.0.1:4010',
+    fetchImpl: async () => ({ ok: true, json: async () => ({ data: [] }) }),
+  });
 
   await withServer(app, async (baseUrl) => {
     const response = await fetch(`${baseUrl}/.well-known/ai-plugin.json`);
     assert.equal(response.status, 200);
 
     const payload = await response.json();
-    assert.equal(payload.api.url, `${baseUrl}/openapi.yaml`);
-    assert.equal(payload.logo_url, `${baseUrl}/logo.svg`);
+    assert.equal(payload.api.url, 'http://127.0.0.1:4010/openapi.yaml');
+    assert.equal(payload.logo_url, 'http://127.0.0.1:4010/logo.svg');
   });
 });
 
@@ -89,5 +93,47 @@ test('forwards valid image requests to the OpenAI images API', async () => {
       n: 1,
     });
     assert.equal(request.options.headers.Authorization, ['Bearer', 'test-key'].join(' '));
+  });
+});
+
+test('maps upstream HTTP errors to the same status code', async () => {
+  const app = createApp({
+    apiKey: 'test-key',
+    fetchImpl: async () => ({
+      ok: false,
+      status: 429,
+      text: async () => JSON.stringify({ error: { message: 'Rate limited' } }),
+    }),
+  });
+
+  await withServer(app, async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/generate-human-image`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: 'Photorealistic portrait' }),
+    });
+
+    assert.equal(response.status, 429);
+    assert.equal((await response.json()).error, 'Rate limited');
+  });
+});
+
+test('returns 502 when the upstream request throws', async () => {
+  const app = createApp({
+    apiKey: 'test-key',
+    fetchImpl: async () => {
+      throw new Error('network unavailable');
+    },
+  });
+
+  await withServer(app, async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/generate-human-image`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: 'Photorealistic portrait' }),
+    });
+
+    assert.equal(response.status, 502);
+    assert.equal((await response.json()).error, 'network unavailable');
   });
 });

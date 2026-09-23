@@ -18,10 +18,11 @@ ChatGPT plugin for generating photorealistic human images using the OpenAI DALL-
 
 ```bash
 npm install
-OPENAI_API_KEY=your_key_here npm start
+OPENAI_API_KEY=your_key_here PUBLIC_BASE_URL=http://localhost:3000 npm start
 ```
 
 The service starts on port `3000` by default. Override it with `PORT`.
+Set `PUBLIC_BASE_URL` to the externally reachable base URL you want exposed in the plugin manifest and OpenAPI spec.
 
 ## API
 

@@ -10,11 +10,37 @@ function readPublicFile(...parts) {
   return fs.readFileSync(path.join(__dirname, '..', 'public', ...parts), 'utf8');
 }
 
-function buildPublicUrl(req) {
-  return `${req.protocol}://${req.get('host')}`;
+function normalizeBaseUrl(baseUrl) {
+  return baseUrl ? baseUrl.replace(/\/+$/, '') : null;
 }
 
-function createApp({ apiKey = process.env.OPENAI_API_KEY, fetchImpl = fetch } = {}) {
+function resolveBaseUrl(req, configuredBaseUrl) {
+  return normalizeBaseUrl(configuredBaseUrl) || `http://localhost:${process.env.PORT || 3000}`;
+}
+
+async function parseResponseBody(response) {
+  if (typeof response.text !== 'function') {
+    return typeof response.json === 'function' ? response.json() : null;
+  }
+
+  const rawBody = await response.text();
+
+  if (!rawBody) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(rawBody);
+  } catch {
+    return rawBody;
+  }
+}
+
+function createApp({
+  apiKey = process.env.OPENAI_API_KEY,
+  baseUrl = process.env.PUBLIC_BASE_URL,
+  fetchImpl = fetch,
+} = {}) {
   const app = express();
   const openApiTemplate = readPublicFile('openapi.yaml');
 
@@ -26,9 +52,9 @@ function createApp({ apiKey = process.env.OPENAI_API_KEY, fetchImpl = fetch } = 
       name: 'chatgpt-human-photorealism',
       description: 'ChatGPT plugin for generating photorealistic human images with DALL-E.',
       docs: {
-        manifest: `${buildPublicUrl(req)}/.well-known/ai-plugin.json`,
-        openapi: `${buildPublicUrl(req)}/openapi.yaml`,
-        health: `${buildPublicUrl(req)}/health`,
+        manifest: `${resolveBaseUrl(req, baseUrl)}/.well-known/ai-plugin.json`,
+        openapi: `${resolveBaseUrl(req, baseUrl)}/openapi.yaml`,
+        health: `${resolveBaseUrl(req, baseUrl)}/health`,
       },
     });
   });
@@ -38,7 +64,7 @@ function createApp({ apiKey = process.env.OPENAI_API_KEY, fetchImpl = fetch } = 
   });
 
   app.get('/.well-known/ai-plugin.json', (req, res) => {
-    const baseUrl = buildPublicUrl(req);
+    const publicBaseUrl = resolveBaseUrl(req, baseUrl);
     res.json({
       schema_version: 'v1',
       name_for_human: 'Human Photorealism',
@@ -51,17 +77,17 @@ function createApp({ apiKey = process.env.OPENAI_API_KEY, fetchImpl = fetch } = 
       },
       api: {
         type: 'openapi',
-        url: `${baseUrl}/openapi.yaml`,
+        url: `${publicBaseUrl}/openapi.yaml`,
       },
-      logo_url: `${baseUrl}/logo.svg`,
+      logo_url: `${publicBaseUrl}/logo.svg`,
       contact_email: 'support@example.com',
       legal_info_url: 'https://example.com/legal',
     });
   });
 
   app.get('/openapi.yaml', (req, res) => {
-    const baseUrl = buildPublicUrl(req);
-    res.type('text/yaml').send(openApiTemplate.replace(/__SERVER_URL__/g, baseUrl));
+    const publicBaseUrl = resolveBaseUrl(req, baseUrl);
+    res.type('text/yaml').send(openApiTemplate.replace(/__SERVER_URL__/g, publicBaseUrl));
   });
 
   app.post('/generate-human-image', async (req, res) => {
@@ -106,17 +132,28 @@ function createApp({ apiKey = process.env.OPENAI_API_KEY, fetchImpl = fetch } = 
         }),
       });
 
-      const payload = await response.json();
+      const payload = await parseResponseBody(response);
 
       if (!response.ok) {
         return res.status(response.status).json({
-          error: payload?.error?.message || 'Failed to generate image.',
+          error:
+            (payload && typeof payload === 'object' && payload.error && payload.error.message) ||
+            (typeof payload === 'string' && payload) ||
+            'Failed to generate image.',
+        });
+      }
+
+      const image = payload && typeof payload === 'object' ? payload.data?.[0] || null : null;
+
+      if (!image) {
+        return res.status(502).json({
+          error: 'OpenAI did not return an image result.',
         });
       }
 
       return res.json({
         created: payload.created,
-        image: payload.data?.[0] || null,
+        image,
       });
     } catch (error) {
       return res.status(502).json({
