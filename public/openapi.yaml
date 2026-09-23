@@ -24,6 +24,7 @@ paths:
     post:
       operationId: generateHumanImage
       summary: Generate a photorealistic human image
+      description: Returns generated image metadata on success. If the upstream OpenAI Images API returns a non-2xx response, this endpoint passes through the upstream HTTP status code and returns a JSON body with a single `error` field.
       requestBody:
         required: true
         content:
@@ -113,7 +114,7 @@ paths:
                   error:
                     type: string
         default:
-          description: Other upstream API error
+          description: Any other upstream non-2xx API error passed through from OpenAI
           content:
             application/json:
               schema:

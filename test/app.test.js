@@ -171,3 +171,24 @@ test('returns 502 when the upstream request throws', async () => {
     assert.equal((await response.json()).error, 'Failed to generate image.');
   });
 });
+
+test('returns 502 when OpenAI succeeds without an image result', async () => {
+  const app = createApp({
+    apiKey: 'test-key',
+    fetchImpl: async () => ({
+      ok: true,
+      text: async () => JSON.stringify({ created: 123, data: [] }),
+    }),
+  });
+
+  await withServer(app, async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/generate-human-image`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: 'Photorealistic portrait' }),
+    });
+
+    assert.equal(response.status, 502);
+    assert.equal((await response.json()).error, 'OpenAI did not return an image result.');
+  });
+});

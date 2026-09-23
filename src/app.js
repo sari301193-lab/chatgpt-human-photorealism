@@ -156,9 +156,7 @@ function createApp({
       if (!response.ok) {
         return res.status(response.status).json({
           error:
-            (payload && typeof payload === 'object' && payload.error && payload.error.message) ||
-            (typeof payload === 'string' && payload) ||
-            'Failed to generate image.',
+            (payload && typeof payload === 'object' && payload.error && payload.error.message) || 'Failed to generate image.',
         });
       }
 
