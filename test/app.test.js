@@ -17,6 +17,27 @@ async function withServer(app, run) {
   }
 }
 
+async function requestJson(url, options = {}) {
+  return new Promise((resolve, reject) => {
+    const request = http.request(url, options, (response) => {
+      let body = '';
+      response.setEncoding('utf8');
+      response.on('data', (chunk) => {
+        body += chunk;
+      });
+      response.on('end', () => {
+        resolve({
+          statusCode: response.statusCode,
+          body: body ? JSON.parse(body) : null,
+        });
+      });
+    });
+
+    request.on('error', reject);
+    request.end();
+  });
+}
+
 test('serves plugin manifest with dynamic host URLs', async () => {
   const app = createApp({
     apiKey: 'test-key',
@@ -31,6 +52,27 @@ test('serves plugin manifest with dynamic host URLs', async () => {
     const payload = await response.json();
     assert.equal(payload.api.url, 'http://127.0.0.1:4010/openapi.yaml');
     assert.equal(payload.logo_url, 'http://127.0.0.1:4010/logo.svg');
+  });
+});
+
+test('falls back to the request host when PUBLIC_BASE_URL is not set', async () => {
+  const app = createApp({
+    apiKey: 'test-key',
+    fetchImpl: async () => ({ ok: true, json: async () => ({ data: [] }) }),
+  });
+
+  await withServer(app, async (baseUrl) => {
+    const response = await requestJson(`${baseUrl}/.well-known/ai-plugin.json`, {
+      method: 'GET',
+      headers: {
+        Host: 'plugin.example.com',
+      },
+    });
+    assert.equal(response.statusCode, 200);
+
+    const payload = response.body;
+    assert.equal(payload.api.url, 'http://plugin.example.com/openapi.yaml');
+    assert.equal(payload.logo_url, 'http://plugin.example.com/logo.svg');
   });
 });
 

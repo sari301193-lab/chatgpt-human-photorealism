@@ -14,8 +14,24 @@ function normalizeBaseUrl(baseUrl) {
   return baseUrl ? baseUrl.replace(/\/+$/, '') : null;
 }
 
+function isSafeRequestHost(host) {
+  return typeof host === 'string' && /^[a-z0-9.-]+(?::\d+)?$/i.test(host);
+}
+
 function resolveBaseUrl(req, configuredBaseUrl) {
-  return normalizeBaseUrl(configuredBaseUrl) || `http://localhost:${process.env.PORT || 3000}`;
+  const normalizedBaseUrl = normalizeBaseUrl(configuredBaseUrl);
+
+  if (normalizedBaseUrl) {
+    return normalizedBaseUrl;
+  }
+
+  const requestHost = req.get('host');
+
+  if (isSafeRequestHost(requestHost)) {
+    return `${req.protocol}://${requestHost}`;
+  }
+
+  return `http://localhost:${process.env.PORT || 3000}`;
 }
 
 async function parseResponseBody(response) {

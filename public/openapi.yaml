@@ -103,3 +103,21 @@ paths:
                 properties:
                   error:
                     type: string
+        '429':
+          description: Upstream rate limit or quota error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+      default:
+        description: Other upstream API error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
