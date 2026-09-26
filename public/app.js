@@ -47,6 +47,8 @@ form.addEventListener('submit', (event) => {
 });
 
 copyButton.addEventListener('click', async () => {
+  copyStatus.textContent = '';
+
   try {
     const copied = await copyPromptToClipboard({
       clipboard: navigator.clipboard,
@@ -66,7 +68,6 @@ copyButton.addEventListener('click', async () => {
 
   window.setTimeout(() => {
     copyButton.textContent = 'Copy';
-    copyStatus.textContent = '';
   }, 1200);
 });
 

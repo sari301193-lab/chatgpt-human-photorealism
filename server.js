@@ -1,4 +1,4 @@
-import { createReadStream, existsSync, statSync } from 'node:fs';
+import { createReadStream, statSync } from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -42,7 +42,14 @@ const server = http.createServer((request, response) => {
     isWithinDirectory(publicDir, filePath) ||
     isWithinDirectory(libDir, filePath);
 
-  if (!isAllowedPath || !existsSync(filePath) || !statSync(filePath).isFile()) {
+  let fileStats;
+  try {
+    fileStats = statSync(filePath);
+  } catch {
+    fileStats = null;
+  }
+
+  if (!isAllowedPath || !fileStats?.isFile()) {
     response.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
     response.end('Not found');
     return;

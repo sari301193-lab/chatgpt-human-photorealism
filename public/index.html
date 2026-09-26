@@ -19,53 +19,53 @@
       <section class="card form-card">
         <form id="prompt-form">
           <div class="grid">
-            <label>
+            <label for="subject">
               <span>Subject</span>
-              <input name="subject" placeholder="e.g. a 28-year-old woman with freckles and short black hair" />
+              <input id="subject" name="subject" placeholder="e.g. a 28-year-old woman with freckles and short black hair" />
             </label>
-            <label>
+            <label for="face">
               <span>Face and expression</span>
-              <input name="face" placeholder="e.g. relaxed smile, direct eye contact, soft makeup" />
+              <input id="face" name="face" placeholder="e.g. relaxed smile, direct eye contact, soft makeup" />
             </label>
-            <label>
+            <label for="pose">
               <span>Pose and composition</span>
-              <input name="pose" placeholder="e.g. waist-up portrait, turned slightly left, centered framing" />
+              <input id="pose" name="pose" placeholder="e.g. waist-up portrait, turned slightly left, centered framing" />
             </label>
-            <label>
+            <label for="wardrobe">
               <span>Wardrobe and styling</span>
-              <input name="wardrobe" placeholder="e.g. beige trench coat, gold hoop earrings" />
+              <input id="wardrobe" name="wardrobe" placeholder="e.g. beige trench coat, gold hoop earrings" />
             </label>
-            <label>
+            <label for="environment">
               <span>Environment</span>
-              <input name="environment" placeholder="e.g. rainy city street at night with neon reflections" />
+              <input id="environment" name="environment" placeholder="e.g. rainy city street at night with neon reflections" />
             </label>
-            <label>
+            <label for="lighting">
               <span>Lighting</span>
-              <input name="lighting" placeholder="e.g. soft key light with warm rim light" />
+              <input id="lighting" name="lighting" placeholder="e.g. soft key light with warm rim light" />
             </label>
-            <label>
+            <label for="camera">
               <span>Camera</span>
-              <input name="camera" placeholder="e.g. 85mm lens, shallow depth of field, crisp focus" />
+              <input id="camera" name="camera" placeholder="e.g. 85mm lens, shallow depth of field, crisp focus" />
             </label>
-            <label>
+            <label for="mood">
               <span>Mood and color</span>
-              <input name="mood" placeholder="e.g. cinematic, moody blues and amber highlights" />
+              <input id="mood" name="mood" placeholder="e.g. cinematic, moody blues and amber highlights" />
             </label>
           </div>
 
-          <label>
+          <label for="details">
             <span>Fine details</span>
-            <textarea name="details" rows="4" placeholder="e.g. visible skin pores, natural flyaway hairs, water droplets on jacket"></textarea>
+            <textarea id="details" name="details" rows="4" placeholder="e.g. visible skin pores, natural flyaway hairs, water droplets on jacket"></textarea>
           </label>
 
-          <label>
+          <label for="quality">
             <span>Extra quality traits (comma or newline separated)</span>
-            <textarea name="quality" rows="3" placeholder="e.g. studio-grade realism, subtle imperfections"></textarea>
+            <textarea id="quality" name="quality" rows="3" placeholder="e.g. studio-grade realism, subtle imperfections"></textarea>
           </label>
 
-          <label>
+          <label for="negative">
             <span>Negative prompt / things to avoid (comma or newline separated)</span>
-            <textarea name="negative" rows="3" placeholder="e.g. extra fingers, waxy skin, distorted eyes"></textarea>
+            <textarea id="negative" name="negative" rows="3" placeholder="e.g. extra fingers, waxy skin, distorted eyes"></textarea>
           </label>
 
           <div class="actions">
