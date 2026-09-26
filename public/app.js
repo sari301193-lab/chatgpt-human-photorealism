@@ -68,6 +68,7 @@ copyButton.addEventListener('click', async () => {
 
   window.setTimeout(() => {
     copyButton.textContent = 'Copy';
+    copyStatus.textContent = 'Ready to copy prompt.';
   }, 1200);
 });
 

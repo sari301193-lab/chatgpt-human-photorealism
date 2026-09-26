@@ -35,6 +35,15 @@ function isWithinDirectory(baseDir, filePath) {
 }
 
 const server = http.createServer((request, response) => {
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
+    response.writeHead(405, {
+      'Allow': 'GET, HEAD',
+      'Content-Type': 'text/plain; charset=utf-8'
+    });
+    response.end('Method not allowed');
+    return;
+  }
+
   const url = new URL(request.url || '/', 'http://localhost');
   const filePath = path.normalize(resolveFile(url.pathname));
   const isAllowedPath =
@@ -59,6 +68,11 @@ const server = http.createServer((request, response) => {
   response.writeHead(200, {
     'Content-Type': mimeTypes[extension] || 'application/octet-stream'
   });
+
+  if (request.method === 'HEAD') {
+    response.end();
+    return;
+  }
 
   createReadStream(filePath).pipe(response);
 });
