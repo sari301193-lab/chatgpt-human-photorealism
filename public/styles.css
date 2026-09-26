@@ -78,6 +78,13 @@ textarea {
   resize: vertical;
 }
 
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #38bdf8;
+  outline-offset: 2px;
+}
+
 .actions,
 .output-header {
   display: flex;

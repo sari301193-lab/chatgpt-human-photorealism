@@ -31,7 +31,7 @@ function resolveFile(urlPath) {
 
 function isWithinDirectory(baseDir, filePath) {
   const relativePath = path.relative(baseDir, filePath);
-  return relativePath && !relativePath.startsWith('..') && !path.isAbsolute(relativePath);
+  return !relativePath.startsWith('..') && !path.isAbsolute(relativePath);
 }
 
 const server = http.createServer((request, response) => {

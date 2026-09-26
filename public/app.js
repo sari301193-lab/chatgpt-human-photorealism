@@ -1,4 +1,5 @@
 import { buildPrompt, buildPromptSections } from '/lib/promptBuilder.js';
+import { copyPromptToClipboard, toBreakdownItems } from '/lib/ui.js';
 
 const form = document.querySelector('#prompt-form');
 const output = document.querySelector('#prompt-output');
@@ -27,11 +28,14 @@ function getFormData() {
 function renderPrompt(data) {
   const sections = buildPromptSections(data);
   output.value = buildPrompt(data);
-  breakdown.innerHTML = '';
+  breakdown.replaceChildren();
 
-  sections.forEach((section) => {
+  toBreakdownItems(sections).forEach((section) => {
     const item = document.createElement('li');
-    item.innerHTML = `<strong>${section.label}:</strong> ${section.value}`;
+    const label = document.createElement('strong');
+
+    label.textContent = section.label;
+    item.append(label, ` ${section.value}`);
     breakdown.appendChild(item);
   });
 }
@@ -42,12 +46,21 @@ form.addEventListener('submit', (event) => {
 });
 
 copyButton.addEventListener('click', async () => {
-  if (!output.value) {
-    return;
+  try {
+    const copied = await copyPromptToClipboard({
+      clipboard: navigator.clipboard,
+      text: output.value
+    });
+
+    if (!copied) {
+      return;
+    }
+
+    copyButton.textContent = 'Copied';
+  } catch {
+    copyButton.textContent = 'Clipboard unavailable';
   }
 
-  await navigator.clipboard.writeText(output.value);
-  copyButton.textContent = 'Copied';
   window.setTimeout(() => {
     copyButton.textContent = 'Copy';
   }, 1200);
