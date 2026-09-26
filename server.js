@@ -74,7 +74,18 @@ const server = http.createServer((request, response) => {
     return;
   }
 
-  createReadStream(filePath).pipe(response);
+  const stream = createReadStream(filePath);
+  stream.on('error', () => {
+    if (response.headersSent) {
+      response.destroy();
+      return;
+    }
+
+    response.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
+    response.end('Unable to read file');
+  });
+
+  stream.pipe(response);
 });
 
 server.listen(port, () => {

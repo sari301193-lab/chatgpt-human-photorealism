@@ -7,6 +7,7 @@ const breakdown = document.querySelector('#prompt-breakdown');
 const copyButton = document.querySelector('#copy-output');
 const copyStatus = document.querySelector('#copy-status');
 const exampleButton = document.querySelector('#load-example');
+let copyResetTimer;
 
 const example = {
   subject: 'a young man with olive skin, short curly hair, and light stubble',
@@ -66,7 +67,8 @@ copyButton.addEventListener('click', async () => {
     copyStatus.textContent = 'Clipboard unavailable. Copy the prompt manually.';
   }
 
-  window.setTimeout(() => {
+  window.clearTimeout(copyResetTimer);
+  copyResetTimer = window.setTimeout(() => {
     copyButton.textContent = 'Copy';
     copyStatus.textContent = 'Ready to copy prompt.';
   }, 1200);
