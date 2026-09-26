@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prompt Reverse Engineer</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="layout">
+      <section class="intro card">
+        <p class="eyebrow">chatgpt-human-photorealism</p>
+        <h1>Reverse engineer a photorealistic prompt</h1>
+        <p>
+          Capture the visual traits you see in a target image and reconstruct them into a reusable prompt.
+        </p>
+      </section>
+
+      <section class="card form-card">
+        <form id="prompt-form">
+          <div class="grid">
+            <label>
+              <span>Subject</span>
+              <input name="subject" placeholder="e.g. a 28-year-old woman with freckles and short black hair" />
+            </label>
+            <label>
+              <span>Face and expression</span>
+              <input name="face" placeholder="e.g. relaxed smile, direct eye contact, soft makeup" />
+            </label>
+            <label>
+              <span>Pose and composition</span>
+              <input name="pose" placeholder="e.g. waist-up portrait, turned slightly left, centered framing" />
+            </label>
+            <label>
+              <span>Wardrobe and styling</span>
+              <input name="wardrobe" placeholder="e.g. beige trench coat, gold hoop earrings" />
+            </label>
+            <label>
+              <span>Environment</span>
+              <input name="environment" placeholder="e.g. rainy city street at night with neon reflections" />
+            </label>
+            <label>
+              <span>Lighting</span>
+              <input name="lighting" placeholder="e.g. soft key light with warm rim light" />
+            </label>
+            <label>
+              <span>Camera</span>
+              <input name="camera" placeholder="e.g. 85mm lens, shallow depth of field, crisp focus" />
+            </label>
+            <label>
+              <span>Mood and color</span>
+              <input name="mood" placeholder="e.g. cinematic, moody blues and amber highlights" />
+            </label>
+          </div>
+
+          <label>
+            <span>Fine details</span>
+            <textarea name="details" rows="4" placeholder="e.g. visible skin pores, natural flyaway hairs, water droplets on jacket"></textarea>
+          </label>
+
+          <label>
+            <span>Extra quality traits (comma or newline separated)</span>
+            <textarea name="quality" rows="3" placeholder="e.g. studio-grade realism, subtle imperfections"></textarea>
+          </label>
+
+          <label>
+            <span>Negative prompt / things to avoid (comma or newline separated)</span>
+            <textarea name="negative" rows="3" placeholder="e.g. extra fingers, waxy skin, distorted eyes"></textarea>
+          </label>
+
+          <div class="actions">
+            <button type="submit">Generate prompt</button>
+            <button type="button" id="load-example" class="secondary">Load example</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card output-card">
+        <div class="output-header">
+          <h2>Generated prompt</h2>
+          <button type="button" id="copy-output" class="secondary">Copy</button>
+        </div>
+        <textarea id="prompt-output" rows="10" readonly></textarea>
+        <h3>Prompt breakdown</h3>
+        <ul id="prompt-breakdown"></ul>
+      </section>
+    </main>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

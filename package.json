@@ -1,0 +1,22 @@
+{
+  "name": "chatgpt-human-photorealism",
+  "version": "1.0.0",
+  "description": "App for reconstructing detailed photorealistic human image prompts",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://localhost:26831/sari301193-lab/chatgpt-human-photorealism"
+  },
+  "keywords": [
+    "prompt",
+    "photorealism",
+    "dalle"
+  ],
+  "author": "",
+  "license": "ISC"
+}
