@@ -78,8 +78,9 @@
       <section class="card output-card">
         <div class="output-header">
           <h2 id="prompt-output-label">Generated prompt</h2>
-          <button type="button" id="copy-output" class="secondary">Copy</button>
+          <button type="button" id="copy-output" class="secondary" aria-describedby="copy-status">Copy</button>
         </div>
+        <p id="copy-status" class="sr-only" aria-live="polite"></p>
         <textarea id="prompt-output" rows="10" readonly aria-labelledby="prompt-output-label"></textarea>
         <h3>Prompt breakdown</h3>
         <ul id="prompt-breakdown"></ul>

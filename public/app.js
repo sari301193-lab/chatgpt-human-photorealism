@@ -5,6 +5,7 @@ const form = document.querySelector('#prompt-form');
 const output = document.querySelector('#prompt-output');
 const breakdown = document.querySelector('#prompt-breakdown');
 const copyButton = document.querySelector('#copy-output');
+const copyStatus = document.querySelector('#copy-status');
 const exampleButton = document.querySelector('#load-example');
 
 const example = {
@@ -57,12 +58,15 @@ copyButton.addEventListener('click', async () => {
     }
 
     copyButton.textContent = 'Copied';
+    copyStatus.textContent = 'Prompt copied to clipboard.';
   } catch {
     copyButton.textContent = 'Clipboard unavailable';
+    copyStatus.textContent = 'Clipboard unavailable. Copy the prompt manually.';
   }
 
   window.setTimeout(() => {
     copyButton.textContent = 'Copy';
+    copyStatus.textContent = '';
   }, 1200);
 });
 
