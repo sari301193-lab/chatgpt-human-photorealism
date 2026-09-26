@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Prompt Reverse Engineer logo">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="40" fill="#020617"/>
+  <circle cx="128" cy="96" r="44" fill="url(#g)"/>
+  <path d="M72 196c14-34 38-51 56-51s42 17 56 51" fill="none" stroke="#e2e8f0" stroke-width="18" stroke-linecap="round"/>
+  <path d="M54 54l38 18M202 54l-38 18" stroke="#38bdf8" stroke-width="12" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,18 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Photorealistic Prompt Reverse Engineer",
+  "name_for_model": "photorealistic_prompt_reverse_engineer",
+  "description_for_human": "Turn observed image traits into a reusable photorealistic human-image prompt.",
+  "description_for_model": "Use this plugin to reconstruct a detailed photorealistic human-image prompt from structured observations such as subject, expression, pose, wardrobe, environment, lighting, camera, mood, fine details, and negative constraints.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "http://localhost:3000/openapi.yaml",
+    "is_user_authenticated": false
+  },
+  "logo_url": "http://localhost:3000/logo.svg",
+  "contact_email": "support@local.invalid",
+  "legal_info_url": "https://github.com/sari301193-lab/chatgpt-human-photorealism"
+}

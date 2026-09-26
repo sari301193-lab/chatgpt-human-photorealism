@@ -1,0 +1,95 @@
+openapi: 3.0.1
+info:
+  title: Photorealistic Prompt Reverse Engineer API
+  version: 1.0.0
+  description: Reconstruct a detailed photorealistic human-image prompt from structured observations.
+servers:
+  - url: http://localhost:3000
+paths:
+  /api/reverse-engineer:
+    post:
+      operationId: reverseEngineerPrompt
+      summary: Build a reusable prompt from observed image traits
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PromptRequest'
+      responses:
+        '200':
+          description: Prompt generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromptResponse'
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '405':
+          description: Method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    PromptRequest:
+      type: object
+      properties:
+        subject:
+          type: string
+        face:
+          type: string
+        pose:
+          type: string
+        wardrobe:
+          type: string
+        environment:
+          type: string
+        lighting:
+          type: string
+        camera:
+          type: string
+        mood:
+          type: string
+        details:
+          type: string
+        quality:
+          type: string
+          description: Comma-separated or newline-separated quality cues.
+        negative:
+          type: string
+          description: Comma-separated or newline-separated traits to avoid.
+    PromptSection:
+      type: object
+      required:
+        - label
+        - value
+      properties:
+        label:
+          type: string
+        value:
+          type: string
+    PromptResponse:
+      type: object
+      required:
+        - prompt
+        - sections
+      properties:
+        prompt:
+          type: string
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/PromptSection'
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
